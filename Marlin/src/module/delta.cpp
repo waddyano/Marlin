@@ -229,6 +229,14 @@ void forward_kinematics_DELTA(float z1, float z2, float z3) {
   cartes[Z_AXIS] =             z1 + ex[2] * Xnew + ey[2] * Ynew - ez[2] * Znew;
 }
 
+#if ENABLED(SENSORLESS_HOMING)
+  inline void delta_sensorless_homing(const bool on=true) {
+    sensorless_homing_per_axis(A_AXIS, on);
+    sensorless_homing_per_axis(B_AXIS, on);
+    sensorless_homing_per_axis(C_AXIS, on);
+  }
+#endif
+
 /**
  * A delta can only safely home all axes at the same time
  * This is like quick_home_xy() but for 3 towers.
@@ -243,9 +251,7 @@ bool home_delta() {
 
   // Disable stealthChop if used. Enable diag1 pin on driver.
   #if ENABLED(SENSORLESS_HOMING)
-    sensorless_homing_per_axis(A_AXIS);
-    sensorless_homing_per_axis(B_AXIS);
-    sensorless_homing_per_axis(C_AXIS);
+    delta_sensorless_homing();
   #endif
 
   // Move all carriages together linearly until an endstop is hit.
@@ -256,9 +262,7 @@ bool home_delta() {
 
   // Re-enable stealthChop if used. Disable diag1 pin on driver.
   #if ENABLED(SENSORLESS_HOMING)
-    sensorless_homing_per_axis(A_AXIS, false);
-    sensorless_homing_per_axis(B_AXIS, false);
-    sensorless_homing_per_axis(C_AXIS, false);
+    delta_sensorless_homing(false);
   #endif
 
   // If an endstop was not hit, then damage can occur if homing is continued.
