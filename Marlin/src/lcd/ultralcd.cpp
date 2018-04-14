@@ -3080,6 +3080,14 @@ void kill_screen(const char* lcd_msg) {
     MENU_ITEM(submenu, MSG_MOVE_10MM, lcd_move_menu_10mm);
     MENU_ITEM(submenu, MSG_MOVE_1MM, lcd_move_menu_1mm);
     MENU_ITEM(submenu, MSG_MOVE_01MM, lcd_move_menu_01mm);
+    switch (axis) {
+      case X_AXIS:
+        MENU_ITEM(gcode, MSG_AUTO_HOME_X, PSTR("G28 X")); break;
+      case Y_AXIS:
+        MENU_ITEM(gcode, MSG_AUTO_HOME_Y, PSTR("G28 Y")); break;
+      case Z_AXIS:
+        MENU_ITEM(gcode, MSG_AUTO_HOME_Z, PSTR("G28 Z")); break;
+    }
     END_MENU();
   }
   void lcd_move_get_x_amount()        { _lcd_move_distance_menu(X_AXIS, lcd_move_x); }
