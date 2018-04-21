@@ -1039,6 +1039,10 @@
 #define PLANNER_LEVELING      (OLDSCHOOL_ABL || ENABLED(MESH_BED_LEVELING) || UBL_SEGMENTED || ENABLED(SKEW_CORRECTION))
 #define HAS_PROBING_PROCEDURE (HAS_ABL || ENABLED(Z_MIN_PROBE_REPEATABILITY_TEST))
 
+#if ENABLED(AUTO_BED_LEVELING_UBL)
+  #undef LCD_BED_LEVELING
+#endif
+
 /**
  * Heater & Fan Pausing
  */
@@ -1443,5 +1447,9 @@
 
 // If platform requires early initialization of watchdog to properly boot
 #define EARLY_WATCHDOG (ENABLED(USE_WATCHDOG) && defined(ARDUINO_ARCH_SAM))
+
+#if ENABLED(G29_RETRY_AND_RECOVER)
+  #define USE_EXECUTE_COMMANDS_IMMEDIATE
+#endif
 
 #endif // CONDITIONALS_POST_H
