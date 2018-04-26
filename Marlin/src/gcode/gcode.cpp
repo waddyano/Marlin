@@ -42,6 +42,8 @@ GcodeSuite gcode;
 
 #include "../Marlin.h" // for idle() and suspend_auto_report
 
+#include "../network/network.h"
+
 uint8_t GcodeSuite::target_extruder;
 millis_t GcodeSuite::previous_move_ms;
 
@@ -399,6 +401,9 @@ void GcodeSuite::process_parsed_command(
         #endif
       #endif // BARICUDA
 
+        case 130: 
+          network_test();
+          break;
       #if HAS_POWER_SWITCH
         case 80: M80(); break;                                    // M80: Turn on Power Supply
       #endif
