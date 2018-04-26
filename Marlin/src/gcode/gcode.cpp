@@ -367,7 +367,7 @@ void GcodeSuite::process_parsed_command(
         case 113: M113(); break;                                  // M113: Set Host Keepalive interval
       #endif
 
-      #if HAS_HEATER_BED && HAS_TEMP_BED
+      #if HAS_HEATED_BED
         case 140: M140(); break;                                  // M140: Set bed temperature
         case 190: M190(); break;                                  // M190: Wait for bed temperature to reach target
       #endif
@@ -706,8 +706,7 @@ void GcodeSuite::process_next_command() {
    */
   void GcodeSuite::process_subcommands_now_P(const char *pgcode) {
     // Save the parser state
-    char saved_cmd[strlen(parser.command_ptr) + 1];
-    strcpy(saved_cmd, parser.command_ptr);
+    const char * const saved_cmd = parser.command_ptr;
 
     // Process individual commands in string
     while (pgm_read_byte_near(pgcode)) {
