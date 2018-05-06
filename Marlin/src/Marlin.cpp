@@ -50,8 +50,8 @@
 #include "gcode/parser.h"
 #include "gcode/queue.h"
 
-#include "network/uip/uip.h"
-#include "network/uip/uip_arp.h"
+#include "network/network.h"
+
 #if HAS_BUZZER && DISABLED(LCD_USE_I2C_BUZZER)
   #include "libs/buzzer.h"
 #endif
@@ -155,6 +155,7 @@
 #if ENABLED(USE_CONTROLLER_FAN)
   #include "feature/controllerfan.h"
 #endif
+
 
 bool Running = true;
 
@@ -570,6 +571,8 @@ void idle(
       #endif
     }
   #endif
+
+  network_idle();
 }
 
 /**
@@ -890,11 +893,7 @@ void setup() {
     watchdog_init();
   #endif
 
-  uip_init();
-  // 8D-BE-B1-37-98-7E
-  // random MAC address from an online generator
-  uip_eth_addr mac = { 0x8d, 0xbe, 0xb1, 0x37, 0x98, 0x7e };
-  uip_setethaddr(mac);
+  network_init();
 }
 
 /**

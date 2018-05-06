@@ -140,7 +140,7 @@ static void tx_descr_init (void) {
 
 	for (i = 0; i < EMAC_NUM_TX_FRAG; i++) {
 		Tx_Desc[i].Packet = (uint32_t)&tx_buf[i];
-		Tx_Desc[i].Ctrl   = 0;
+		Tx_Desc[i].Ctrl   = (EMAC_ETH_MAX_FLEN - 1) | EMAC_TCTRL_PAD | EMAC_TCTRL_CRC | EMAC_TCTRL_LAST | EMAC_TCTRL_INT;
 		Tx_Stat[i].Info   = 0;
 	}
 
@@ -454,6 +454,18 @@ int32_t EMAC_CheckPHYStatus(uint32_t ulPHYState)
 	case EMAC_PHY_STAT_DUP:
 		tmp = (regv & EMAC_PHY_SR_FULL_DUP) ? 1 : 0;
 		break;
+#elif defined(LAN8720_LPC_1768)
+	regv = read_PHY (EMAC_PHY_REG_BMSR);
+	switch(ulPHYState){
+	case EMAC_PHY_STAT_LINK:
+		tmp = (regv & EMAC_PHY_BMSR_LINK_STATUS) ? 1 : 0;
+		break;
+	case EMAC_PHY_STAT_SPEED:
+		tmp = (regv & EMAC_PHY_SR_100_SPEED) ? 1 : 0;
+		break;
+	case EMAC_PHY_STAT_DUP:
+		tmp = (regv & EMAC_PHY_SR_FULL_DUP) ? 1 : 0;
+		break;
 #endif
 	default:
 		tmp = -1;
@@ -462,7 +474,7 @@ int32_t EMAC_CheckPHYStatus(uint32_t ulPHYState)
 	return (tmp);
 }
 
-
+extern void uip_lprintf(const char *, ...);
 /*********************************************************************//**
  * @brief		Set specified PHY mode in EMAC peripheral
  * @param[in]	ulPHYMode	Specified PHY mode, should be:
@@ -481,6 +493,7 @@ int32_t EMAC_SetPHYMode(uint32_t ulPHYMode)
 	id1 = read_PHY (EMAC_PHY_REG_IDR1);
 	id2 = read_PHY (EMAC_PHY_REG_IDR2);
 
+	uip_lprintf("id %x %x\n", id1, id2);
 #ifdef MCB_LPC_1768
 	if (((id1 << 16) | (id2 & 0xFFF0)) == EMAC_DP83848C_ID) {
 		switch(ulPHYMode){
@@ -494,11 +507,22 @@ int32_t EMAC_SetPHYMode(uint32_t ulPHYMode)
 			/* Use auto-negotiation about the link speed. */
 			write_PHY (EMAC_PHY_REG_BMCR, EMAC_PHY_AUTO_NEG);
 //			write_PHY (EMAC_PHY_REG_BMCR, EMAC_PHY_BMCR_AN);
+#elif defined(LAN8720_LPC_1768)
+	if (((id1 << 16) | (id2 & 0xfff0)) == EMAC_LAN8720_ID) {
+		/* Configure the PHY device */
+		switch(ulPHYMode){
+		case EMAC_MODE_AUTO:
+			/* Use auto-negotiation about the link speed. */
+			write_PHY (EMAC_PHY_REG_BMCR, EMAC_PHY_AUTO_NEG);
 #endif
+			{ int32_t x = read_PHY(EMAC_PHY_REG_BMSR) & EMAC_PHY_BMSR_AUTO_DONE;
+			uip_lprintf("before %d", x); }
 			/* Wait to complete Auto_Negotiation */
 			for (tout = EMAC_PHY_RESP_TOUT; tout>=0; tout--) {
 
 			}
+			{ int32_t x = read_PHY(EMAC_PHY_REG_BMSR) & EMAC_PHY_BMSR_AUTO_DONE;
+			uip_lprintf("after %d", x); }
 			break;
 		case EMAC_MODE_10M_FULL:
 			/* Connect at 10MBit full-duplex */
@@ -580,7 +604,7 @@ int32_t EMAC_UpdatePHYStatus(void)
 		/* 100MBit mode. */
 		LPC_EMAC->SUPP = EMAC_SUPP_SPEED;
 	}
-#elif defined(IAR_LPC_1768)
+#elif defined(IAR_LPC_1768) || defined(LAN8720_LPC_1768)
 	for (tout = EMAC_PHY_RESP_TOUT; tout>=0; tout--) {
 		regv = read_PHY (EMAC_PHY_REG_BMSR);
 		if (regv & EMAC_PHY_BMSR_LINK_STATUS) {
@@ -593,6 +617,7 @@ int32_t EMAC_UpdatePHYStatus(void)
 		}
 	}
 
+uip_lprintf("update status");
 	/* Configure Full/Half Duplex mode. */
 	if (regv & EMAC_PHY_SR_FULL_DUP) {
 		/* Full duplex is enabled. */

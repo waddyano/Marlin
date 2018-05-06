@@ -401,9 +401,10 @@ void GcodeSuite::process_parsed_command(
         #endif
       #endif // BARICUDA
 
-        case 130: 
-          network_test();
-          break;
+      case 130: network_test();break;
+      case 131: network_set_debug(1);break;
+      case 132: network_set_debug(0);break;
+
       #if HAS_POWER_SWITCH
         case 80: M80(); break;                                    // M80: Turn on Power Supply
       #endif
@@ -659,6 +660,7 @@ void GcodeSuite::process_parsed_command(
         case 869: M869(); break;                                  // M869: Report axis error
       #endif
 
+      case 998: NVIC_SystemReset(); break;
       case 999: M999(); break;                                    // M999: Restart after being Stopped
     }
     break;

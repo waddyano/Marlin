@@ -45,6 +45,7 @@ typedef uint32_t hal_timer_t;
 
 #define STEP_TIMER_NUM 0  // index of timer to use for stepper
 #define TEMP_TIMER_NUM 1  // index of timer to use for temperature
+#define NETWORK_TIMER_NUM 2
 
 #define HAL_TIMER_RATE         ((SystemCoreClock) / 4)  // frequency of timers peripherals
 #define STEPPER_TIMER_PRESCALE (CYCLES_PER_MICROSECOND / HAL_TICKS_PER_US)
@@ -67,6 +68,7 @@ typedef uint32_t hal_timer_t;
 
 #define HAL_STEP_TIMER_ISR  extern "C" void TIMER0_IRQHandler(void)
 #define HAL_TEMP_TIMER_ISR  extern "C" void TIMER1_IRQHandler(void)
+#define HAL_NETWORK_TIMER_ISR  extern "C" void TIMER2_IRQHandler(void)
 
 // PWM timer
 #define HAL_PWM_TIMER      LPC_TIM3
@@ -99,6 +101,11 @@ FORCE_INLINE static void HAL_timer_set_compare(const uint8_t timer_num, const ha
       if (LPC_TIM1->TC > compare)
         LPC_TIM1->TC = compare - 5; // make sure we don't have one extra long period
       break;
+    case 2:
+      LPC_TIM2->MR0 = compare;
+      if (LPC_TIM2->TC > compare)
+        LPC_TIM2->TC = compare - 5; // make sure we don't have one extra long period
+      break;
   }
 }
 
@@ -106,6 +113,7 @@ FORCE_INLINE static hal_timer_t HAL_timer_get_compare(const uint8_t timer_num) {
   switch (timer_num) {
     case 0: return LPC_TIM0->MR0;
     case 1: return LPC_TIM1->MR0;
+    case 2: return LPC_TIM2->MR0;
   }
   return 0;
 }
@@ -114,6 +122,7 @@ FORCE_INLINE static hal_timer_t HAL_timer_get_count(const uint8_t timer_num) {
   switch (timer_num) {
     case 0: return LPC_TIM0->TC;
     case 1: return LPC_TIM1->TC;
+    case 2: return LPC_TIM2->TC;
   }
   return 0;
 }

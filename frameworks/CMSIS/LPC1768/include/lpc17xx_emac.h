@@ -49,8 +49,9 @@ extern "C"
 {
 #endif
 
-#define MCB_LPC_1768
+//#define MCB_LPC_1768
 //#define IAR_LPC_1768
+#define LAN8720_LPC_1768
 
 /* Public Macros -------------------------------------------------------------- */
 /** @defgroup EMAC_Public_Macros EMAC Public Macros
@@ -583,6 +584,109 @@ EMAC_RINFO_LEN_ERR   | EMAC_RINFO_ALIGN_ERR | EMAC_RINFO_OVERRUN)
 
 #define EMAC_DEF_ADR    (0x01<<8)		/**< Default PHY device address        */
 #define EMAC_KSZ8721BL_ID 	((0x22 << 16) | 0x1619 ) /**< PHY Identifier */
+#elif defined(LAN8720_LPC_1768)
+/* LAN8720 PHY definition ------------------------------------------------------------ */
+/** PHY device reset time out definition */
+#define EMAC_PHY_RESP_TOUT		0x100000UL
+
+/* ENET Device Revision ID */
+//#define EMAC_OLD_EMAC_MODULE_ID  0x39022000  /**< Rev. ID for first rev '-'         */
+
+/*********************************************************************//**
+ * Macro defines for LAN8720 PHY Registers
+ **********************************************************************/
+#define EMAC_PHY_REG_BMCR        0x00        /**< Basic Mode Control Register       */
+#define EMAC_PHY_REG_BMSR        0x01        /**< Basic Mode Status Register        */
+#define EMAC_PHY_REG_IDR1        0x02        /**< PHY Identifier 1                  */
+#define EMAC_PHY_REG_IDR2        0x03        /**< PHY Identifier 2                  */
+#define EMAC_PHY_REG_ANAR        0x04        /**< Auto-Negotiation Advertisement    */
+#define EMAC_PHY_REG_ANLPAR      0x05        /**< Auto-Neg. Link Partner Abitily    */
+#define EMAC_PHY_REG_ANER        0x06        /**< Auto-Neg. Expansion Register      */
+#define EMAC_PHY_REG_MCSR        0x11        /**< Mode control status Register      */
+#define EMAC_PHY_REG_SPMR        0x12        /**< Special modes Register            */
+#define EMAC_PHY_REG_SECR        0x1a        /**< Symbol Error Counter Register     */
+#define EMAC_PHY_REG_SCSIR       0x1b        /**< Special control/status indications Register     */
+#define EMAC_PHY_REG_ISFR        0x1d        /**< Interrupt Source Flag Register    */
+#define EMAC_PHY_REG_PSCSR       0x1f        /**< PHY special control/status Register    */
+#if 0
+#define EMAC_PHY_REG_ANNPTR      0x07        /**< Auto-Neg. Next Page TX            */
+#define EMAC_PHY_REG_LPNPA		 0x08		 /**< Link Partner Next Page Ability    */
+#define EMAC_PHY_REG_REC		 0x15		 /**< RXError Counter Register			*/
+#define EMAC_PHY_REG_ISC		 0x1b		 /**< Interrupt Control/Status Register */
+#define EMAC_PHY_REG_100BASE	 0x1f		 /**< 100BASE-TX PHY Control Register   */
+#endif
+
+/*********************************************************************//**
+ * Macro defines for PHY Basic Mode Control Register
+ **********************************************************************/
+#define EMAC_PHY_BMCR_RESET     			(1<<15)		/**< Reset bit */
+#define EMAC_PHY_BMCR_LOOPBACK      		(1<<14)		/**< Loop back */
+#define EMAC_PHY_BMCR_SPEED_SEL     		(1<<13)		/**< Speed selection */
+#define EMAC_PHY_BMCR_AN					(1<<12)		/**< Auto Negotiation */
+#define EMAC_PHY_BMCR_POWERDOWN				(1<<11)		/**< Power down mode */
+#define EMAC_PHY_BMCR_ISOLATE				(1<<10)		/**< Isolate */
+#define EMAC_PHY_BMCR_RE_AN					(1<<9)		/**< Restart auto negotiation */
+#define EMAC_PHY_BMCR_DUPLEX				(1<<8)		/**< Duplex mode */
+#if 0
+#define EMAC_PHY_BMCR_COLLISION				(1<<7)		/**< Collision test */
+#define EMAC_PHY_BMCR_TXDIS					(1<<0)		/**< Disable transmit */
+#endif
+
+/*********************************************************************//**
+ * Macro defines for PHY Basic Mode Status Register
+ **********************************************************************/
+#define EMAC_PHY_BMSR_100BE_T4        	   	(1<<15)		/**< 100 base T4 */
+#define EMAC_PHY_BMSR_100TX_FULL			(1<<14)		/**< 100 base full duplex */
+#define EMAC_PHY_BMSR_100TX_HALF			(1<<13)		/**< 100 base half duplex */
+#define EMAC_PHY_BMSR_10BE_FULL				(1<<12)		/**< 10 base T full duplex */
+#define EMAC_PHY_BMSR_10BE_HALF				(1<<11)		/**< 10 base T half duplex */
+#if 0
+#define EMAC_PHY_BMSR_NOPREAM				(1<<6)		/**< MF Preamable Supress */
+#endif
+#define EMAC_PHY_BMSR_AUTO_DONE				(1<<5)		/**< Auto negotiation complete */
+#define EMAC_PHY_BMSR_REMOTE_FAULT			(1<<4)		/**< Remote fault */
+#define EMAC_PHY_BMSR_NO_AUTO				(1<<3)		/**< Auto Negotiation ability */
+#define EMAC_PHY_BMSR_LINK_STATUS			(1<<2)		/**< Link status */
+#define EMAC_PHY_BMSR_JABBER_DETECT			(1<<1)		/**< Jabber detect */
+#define EMAC_PHY_BMSR_EXTEND				(1<<0)		/**< Extended support */
+
+/*********************************************************************//**
+ * Macro defines for PHY Identifier
+ **********************************************************************/
+/* PHY Identifier 1 bitmap definitions */
+#define EMAC_PHY_IDR1(n)		(n & 0xFFFF)		/**< PHY ID1 Number */
+
+/* PHY Identifier 2 bitmap definitions */
+#define EMAC_PHY_IDR2(n)		(n & 0xFFFF)		/**< PHY ID2 Number */
+
+/*********************************************************************//**
+ * Macro defines for Auto-Negotiation Advertisement
+ **********************************************************************/
+#if 0
+#define EMAC_PHY_AN_NEXTPAGE					(1<<15)		/**<  Next page capable */
+#endif
+#define EMAC_PHY_AN_REMOTE_FAULT				(1<<13)		/**< Remote Fault support */
+#define EMAC_PHY_AN_PAUSE						(1<<10)		/**< Pause support */
+#if 0
+#define EMAC_PHY_AN_100BASE_T4					(1<<9)		/**< T4 capable */
+#endif
+#define EMAC_PHY_AN_100BASE_TX_FD				(1<<8)		/**< TX with Full-duplex capable */
+#define EMAC_PHY_AN_100BASE_TX					(1<<7)		/**< TX capable */
+#define EMAC_PHY_AN_10BASE_T_FD					(1<<6)		/**< 10Mbps with full-duplex capable */
+#define EMAC_PHY_AN_10BASE_T					(1<<5)		/**< 10Mbps capable */
+#define EMAC_PHY_AN_FIELD(n)					(n & 0x1F)  /**< Selector Field */
+
+#define EMAC_PHY_FULLD_100M      0x2100      /**< Full Duplex 100Mbit               */
+#define EMAC_PHY_HALFD_100M      0x2000      /**< Half Duplex 100Mbit               */
+#define EMAC_PHY_FULLD_10M       0x0100      /**< Full Duplex 10Mbit                */
+#define EMAC_PHY_HALFD_10M       0x0000      /**< Half Duplex 10MBit                */
+#define EMAC_PHY_AUTO_NEG        0x3000      /**< Select Auto Negotiation           */
+
+#define EMAC_PHY_SR_100_SPEED		((1<<14)|(1<<13))
+#define EMAC_PHY_SR_FULL_DUP		((1<<14)|(1<<12))
+
+#define EMAC_DEF_ADR    (0x01<<8)		/**< Default PHY device address        */
+#define EMAC_LAN8720_ID 	((0x7 << 16) | 0xc0f0 ) /**< PHY Identifier */
 #endif
 
 /**
